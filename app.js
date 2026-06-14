@@ -201,9 +201,10 @@ btnTts.addEventListener('click', () => {
   applyCurrentMode();
 });
 
-questionCard.addEventListener('click', () => goNext(false));
-answerCard.addEventListener('click',   () => goNext(false));
-btnNext.addEventListener('click',      () => goNext(false));
+quizScreen.addEventListener('click', (e) => {
+  if (!e.target.closest('.nav-buttons')) goNext(false);
+});
+btnNext.addEventListener('click', () => goNext(false));
 btnPrev.addEventListener('click', goPrev);
 
 document.getElementById('btn-start').addEventListener('click', () => {
