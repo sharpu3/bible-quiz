@@ -47,9 +47,12 @@ function releaseWakeLock() {
 }
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') {
+    clearAutoTimer();
+    stopTts();
     releaseWakeLock();
-  } else if (document.visibilityState === 'visible' && (autoMode || ttsMode)) {
-    requestWakeLock();
+  } else if (document.visibilityState === 'visible') {
+    if (autoMode || ttsMode) requestWakeLock();
+    applyCurrentMode();
   }
 });
 
