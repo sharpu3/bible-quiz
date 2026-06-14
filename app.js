@@ -5,6 +5,21 @@ let ttsMode = false;
 let autoTimer = null;
 let qSeconds = 10;
 let aSeconds = 5;
+let wakeLock = null;
+
+async function requestWakeLock() {
+  if ('wakeLock' in navigator) {
+    try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {}
+  }
+}
+
+function releaseWakeLock() {
+  if (wakeLock) { wakeLock.release(); wakeLock = null; }
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && (autoMode || ttsMode)) requestWakeLock();
+});
 
 function shuffle(arr) {
   const a = [...arr];
@@ -129,6 +144,7 @@ function goNext(fromAuto) {
   } else {
     clearAutoTimer();
     stopTts();
+    releaseWakeLock();
     quizScreen.style.display = 'none';
     doneScreen.style.display = 'flex';
   }
@@ -150,6 +166,7 @@ btnAuto.addEventListener('click', () => {
     clearAutoTimer();
     btnAuto.classList.remove('active');
     tapHint.style.opacity = ttsMode ? '0' : '1';
+    if (!ttsMode) releaseWakeLock();
   } else {
     modalOverlay.classList.add('visible');
   }
@@ -162,7 +179,9 @@ btnTts.addEventListener('click', () => {
   if (!ttsMode) {
     stopTts();
     tapHint.style.opacity = autoMode ? '0' : '1';
+    if (!autoMode) releaseWakeLock();
   } else {
+    requestWakeLock();
     tapHint.style.opacity = '0';
     // 현재 카드 바로 읽기 시작
     const quizIndex = Math.floor(step / 2);
@@ -182,9 +201,18 @@ document.getElementById('modal-confirm').addEventListener('click', () => {
   modalOverlay.classList.remove('visible');
   autoMode = true;
   btnAuto.classList.add('active');
-  // 자동만 모드일 때 현재 카드부터 타이머 시작
-  if (!ttsMode) {
-    const isQuestion = step % 2 === 0;
+  requestWakeLock();
+
+  const quizIndex = Math.floor(step / 2);
+  const isQuestion = step % 2 === 0;
+  const quiz = shuffled[quizIndex];
+
+  if (ttsMode) {
+    // TTS+자동: 현재 카드 다시 읽고 끝나면 2초 후 넘김
+    const text = isQuestion ? quiz.question : quiz.answer.replace(/\s*\(.*\)/, '');
+    speak(text, () => { autoTimer = setTimeout(() => goNext(true), 2000); });
+  } else {
+    // 자동만: 현재 카드부터 타이머 시작
     startCountdown(isQuestion ? qSeconds : aSeconds, isQuestion ? cdBarQ : cdBarA);
   }
 });
