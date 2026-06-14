@@ -7,20 +7,6 @@ let qSeconds = 10;
 let aSeconds = 5;
 let wakeLock = null;
 
-async function requestWakeLock() {
-  if ('wakeLock' in navigator) {
-    try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {}
-  }
-}
-
-function releaseWakeLock() {
-  if (wakeLock) { wakeLock.release(); wakeLock = null; }
-}
-
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible' && (autoMode || ttsMode)) requestWakeLock();
-});
-
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -50,20 +36,30 @@ const modalOverlay = document.getElementById('modal-overlay');
 
 function totalSteps() { return shuffled.length * 2; }
 
+// Wake Lock
+async function requestWakeLock() {
+  if ('wakeLock' in navigator) {
+    try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {}
+  }
+}
+function releaseWakeLock() {
+  if (wakeLock) { wakeLock.release(); wakeLock = null; }
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && (autoMode || ttsMode)) requestWakeLock();
+});
+
 // TTS
 function speak(text, onDone) {
-  if (!ttsMode) { if (onDone) onDone(); return; }
   speechSynthesis.cancel();
+  if (!ttsMode) { if (onDone) onDone(); return; }
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = 'ko-KR';
   utter.rate = 0.9;
   if (onDone) utter.onend = onDone;
   speechSynthesis.speak(utter);
 }
-
-function stopTts() {
-  speechSynthesis.cancel();
-}
+function stopTts() { speechSynthesis.cancel(); }
 
 // 카운트다운 바
 function startCountdown(seconds, barEl) {
@@ -78,15 +74,40 @@ function startCountdown(seconds, barEl) {
   });
   autoTimer = setTimeout(() => goNext(true), seconds * 1000);
 }
-
 function clearAutoTimer() {
   if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
-  cdBarQ.style.transition = 'none';
-  cdBarQ.style.width = '0%';
-  cdBarA.style.transition = 'none';
-  cdBarA.style.width = '0%';
+  cdBarQ.style.transition = 'none'; cdBarQ.style.width = '0%';
+  cdBarA.style.transition = 'none'; cdBarA.style.width = '0%';
 }
 
+// 현재 카드 상태에 맞게 타이머/TTS 적용
+function applyCurrentMode() {
+  clearAutoTimer();
+  stopTts();
+
+  if (shuffled.length === 0) return;
+
+  const quizIndex = Math.floor(step / 2);
+  const isQuestion = step % 2 === 0;
+  const quiz = shuffled[quizIndex];
+
+  tapHint.style.opacity = (autoMode || ttsMode) ? '0' : '1';
+
+  if (autoMode && ttsMode) {
+    // 자동 + 읽기: 읽고 2초 후 넘김
+    const text = isQuestion ? quiz.question : quiz.answer.replace(/\s*\(.*\)/, '');
+    speak(text, () => { autoTimer = setTimeout(() => goNext(true), 2000); });
+  } else if (autoMode) {
+    // 자동만: 타이머
+    startCountdown(isQuestion ? qSeconds : aSeconds, isQuestion ? cdBarQ : cdBarA);
+  } else if (ttsMode) {
+    // 읽기만: 읽고 대기
+    const text = isQuestion ? quiz.question : quiz.answer.replace(/\s*\(.*\)/, '');
+    speak(text, null);
+  }
+}
+
+// 카드 렌더링
 function renderStep() {
   const quizIndex = Math.floor(step / 2);
   const isQuestion = step % 2 === 0;
@@ -102,17 +123,7 @@ function renderStep() {
     questionEl.textContent = quiz.question;
     questionCard.style.display = 'flex';
     answerCard.classList.remove('visible');
-    tapHint.style.opacity = (autoMode || ttsMode) ? '0' : '1';
-
-    if (autoMode && !ttsMode) {
-      // 자동만: 타이머
-      startCountdown(qSeconds, cdBarQ);
-    } else if (ttsMode) {
-      // 읽기(단독 or 자동+읽기): 읽고 나서...
-      speak(quiz.question, autoMode ? () => { autoTimer = setTimeout(() => goNext(true), 2000); } : null);
-    }
   } else {
-    const plainAnswer = quiz.answer.replace(/\s*\(.*\)/, '');
     const match = quiz.answer.match(/^([^(]+?)(\s*\(.*\))?$/);
     if (match && match[2]) {
       answerText.innerHTML = match[1] + '<span class="answer-sub">' + match[2].trim() + '</span>';
@@ -120,24 +131,14 @@ function renderStep() {
       answerText.textContent = quiz.answer;
     }
     questionCard.style.display = 'none';
-    tapHint.style.opacity = '0';
     answerCard.classList.add('visible');
-
-    if (autoMode && !ttsMode) {
-      // 자동만: 타이머
-      startCountdown(aSeconds, cdBarA);
-    } else if (ttsMode) {
-      // 읽기(단독 or 자동+읽기): 읽고 나서...
-      speak(plainAnswer, autoMode ? () => { autoTimer = setTimeout(() => goNext(true), 2000); } : null);
-    }
   }
+
+  applyCurrentMode();
 }
 
 function goNext(fromAuto) {
-  if (!fromAuto) {
-    clearAutoTimer();
-    stopTts();
-  }
+  if (!fromAuto) { clearAutoTimer(); stopTts(); }
   if (step < totalSteps() - 1) {
     step++;
     renderStep();
@@ -153,44 +154,18 @@ function goNext(fromAuto) {
 function goPrev() {
   clearAutoTimer();
   stopTts();
-  if (step > 0) {
-    step--;
-    renderStep();
-  }
+  if (step > 0) { step--; renderStep(); }
 }
 
-// 자동 버튼 토글
+// 자동 버튼
 btnAuto.addEventListener('click', () => {
   if (autoMode) {
     autoMode = false;
-    clearAutoTimer();
     btnAuto.classList.remove('active');
-    tapHint.style.opacity = ttsMode ? '0' : '1';
     if (!ttsMode) releaseWakeLock();
+    applyCurrentMode();
   } else {
     modalOverlay.classList.add('visible');
-  }
-});
-
-// TTS 버튼 토글
-btnTts.addEventListener('click', () => {
-  ttsMode = !ttsMode;
-  btnTts.classList.toggle('active', ttsMode);
-  if (!ttsMode) {
-    stopTts();
-    tapHint.style.opacity = autoMode ? '0' : '1';
-    if (!autoMode) releaseWakeLock();
-  } else {
-    requestWakeLock();
-    tapHint.style.opacity = '0';
-    // 현재 카드 바로 읽기 시작
-    const quizIndex = Math.floor(step / 2);
-    const isQuestion = step % 2 === 0;
-    const quiz = shuffled[quizIndex];
-    if (quizIndex < shuffled.length) {
-      const text = isQuestion ? quiz.question : quiz.answer.replace(/\s*\(.*\)/, '');
-      speak(text, autoMode ? () => { autoTimer = setTimeout(() => goNext(true), 2000); } : null);
-    }
   }
 });
 
@@ -202,24 +177,21 @@ document.getElementById('modal-confirm').addEventListener('click', () => {
   autoMode = true;
   btnAuto.classList.add('active');
   requestWakeLock();
-
-  const quizIndex = Math.floor(step / 2);
-  const isQuestion = step % 2 === 0;
-  const quiz = shuffled[quizIndex];
-
-  if (ttsMode) {
-    // TTS+자동: 현재 카드 다시 읽고 끝나면 2초 후 넘김
-    const text = isQuestion ? quiz.question : quiz.answer.replace(/\s*\(.*\)/, '');
-    speak(text, () => { autoTimer = setTimeout(() => goNext(true), 2000); });
-  } else {
-    // 자동만: 현재 카드부터 타이머 시작
-    startCountdown(isQuestion ? qSeconds : aSeconds, isQuestion ? cdBarQ : cdBarA);
-  }
+  applyCurrentMode();
 });
 
 // 모달 취소
 document.getElementById('modal-cancel').addEventListener('click', () => {
   modalOverlay.classList.remove('visible');
+});
+
+// TTS 버튼
+btnTts.addEventListener('click', () => {
+  ttsMode = !ttsMode;
+  btnTts.classList.toggle('active', ttsMode);
+  if (ttsMode) requestWakeLock();
+  else if (!autoMode) releaseWakeLock();
+  applyCurrentMode();
 });
 
 questionCard.addEventListener('click', () => goNext(false));
@@ -241,6 +213,7 @@ document.getElementById('btn-restart').addEventListener('click', () => {
   ttsMode = false;
   btnAuto.classList.remove('active');
   btnTts.classList.remove('active');
+  releaseWakeLock();
   shuffled = shuffle(quizData);
   doneScreen.style.display = 'none';
   quizScreen.style.display = 'flex';
