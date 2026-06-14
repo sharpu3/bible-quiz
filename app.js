@@ -68,6 +68,7 @@ function advance() {
 }
 
 questionCard.addEventListener('click', advance);
+answerCard.addEventListener('click', advance);
 
 document.getElementById('btn-start').addEventListener('click', () => {
   current = 0;
