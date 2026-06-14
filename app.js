@@ -42,14 +42,23 @@ function showCard(index) {
   btnNext.textContent = index === quizData.length - 1 ? '완료 ✓' : '다음 ▶';
 }
 
-function revealAnswer() {
-  if (answered) return;
-  answered = true;
-  answerCard.classList.add('visible');
-  tapHint.style.opacity = '0';
+function advance() {
+  if (!answered) {
+    answered = true;
+    answerCard.classList.add('visible');
+    tapHint.style.opacity = '0';
+  } else {
+    if (current < quizData.length - 1) {
+      current++;
+      showCard(current);
+    } else {
+      quizScreen.style.display = 'none';
+      doneScreen.style.display = 'flex';
+    }
+  }
 }
 
-questionCard.addEventListener('click', revealAnswer);
+questionCard.addEventListener('click', advance);
 
 document.getElementById('btn-start').addEventListener('click', () => {
   current = 0;
@@ -67,15 +76,7 @@ btnPrev.addEventListener('click', () => {
   }
 });
 
-btnNext.addEventListener('click', () => {
-  if (current < quizData.length - 1) {
-    current++;
-    showCard(current);
-  } else {
-    quizScreen.style.display = 'none';
-    doneScreen.style.display = 'flex';
-  }
-});
+btnNext.addEventListener('click', advance);
 
 document.getElementById('btn-restart').addEventListener('click', () => {
   current = 0;
