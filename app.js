@@ -30,7 +30,12 @@ function showCard(index) {
   answered = false;
 
   questionEl.textContent = quiz.question;
-  answerText.textContent = quiz.answer;
+  const match = quiz.answer.match(/^([^(]+?)(\s*\(.*\))?$/);
+  if (match && match[2]) {
+    answerText.innerHTML = match[1] + '<span class="answer-sub">' + match[2].trim() + '</span>';
+  } else {
+    answerText.textContent = quiz.answer;
+  }
   answerCard.classList.remove('visible');
   tapHint.style.opacity = '1';
 

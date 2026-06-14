@@ -155,6 +155,14 @@ body {
   word-break: keep-all;
 }
 
+.answer-sub {
+  display: block;
+  font-size: 20px;
+  font-weight: 400;
+  color: #aaa;
+  margin-top: 8px;
+}
+
 /* 힌트 */
 .tap-hint {
   text-align: center;
