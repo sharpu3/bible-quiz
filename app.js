@@ -80,7 +80,12 @@ document.getElementById('btn-start').addEventListener('click', () => {
 });
 
 btnPrev.addEventListener('click', () => {
-  if (current > 0) {
+  if (answered) {
+    answered = false;
+    questionCard.style.display = 'flex';
+    answerCard.classList.remove('visible');
+    tapHint.style.opacity = '1';
+  } else if (current > 0) {
     current--;
     showCard(current);
   }
