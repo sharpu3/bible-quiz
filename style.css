@@ -23,11 +23,9 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 28px;
+  gap: 32px;
   text-align: center;
   padding: 24px;
-  width: 100%;
-  max-width: 380px;
 }
 
 #start-screen .title {
@@ -45,64 +43,6 @@ body {
 
 #start-screen .cross {
   font-size: 80px;
-}
-
-/* 자동넘기기 섹션 */
-.auto-section {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  border-top: 1px solid #333;
-  padding-top: 24px;
-}
-
-.auto-title {
-  font-size: 20px;
-  color: #aaa;
-  font-weight: 600;
-}
-
-.time-inputs {
-  display: flex;
-  gap: 24px;
-  justify-content: center;
-}
-
-.time-input-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 22px;
-  color: #eee;
-}
-
-.time-input-group label {
-  color: #aaa;
-}
-
-.time-input-group input {
-  width: 68px;
-  height: 52px;
-  font-size: 24px;
-  font-weight: 700;
-  text-align: center;
-  background: #16213e;
-  border: 2px solid #0f3460;
-  border-radius: 12px;
-  color: #f5c518;
-  outline: none;
-}
-
-.time-input-group input:focus {
-  border-color: #f5c518;
-}
-
-.btn-auto {
-  background: #0f3460 !important;
-  color: #f5c518 !important;
-  border: 2px solid #f5c518 !important;
 }
 
 /* 퀴즈 화면 */
@@ -238,8 +178,7 @@ body {
   height: 6px;
   background: #f5c518;
   border-radius: 4px;
-  width: 100%;
-  transform-origin: left;
+  width: 0%;
 }
 
 /* 힌트 */
@@ -251,10 +190,10 @@ body {
   transition: opacity 0.3s;
 }
 
-/* 이전/다음 버튼 */
+/* 이전/자동/다음 버튼 */
 .nav-buttons {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   position: fixed;
   bottom: 0;
   left: 50%;
@@ -266,7 +205,6 @@ body {
 }
 
 .nav-btn {
-  flex: 1;
   height: 64px;
   border: none;
   border-radius: 16px;
@@ -281,11 +219,27 @@ body {
 }
 
 .btn-prev {
+  flex: 2;
   background: #333;
   color: #eee;
 }
 
+.btn-auto {
+  flex: 1;
+  background: #222;
+  color: #aaa;
+  font-size: 18px;
+  border: 1px solid #444;
+}
+
+.btn-auto.active {
+  background: #0f3460;
+  color: #f5c518;
+  border: 1px solid #f5c518;
+}
+
 .btn-next {
+  flex: 2;
   background: #f5c518;
   color: #1a1a2e;
 }
@@ -325,25 +279,110 @@ body {
   padding: 24px;
 }
 
-#done-screen .done-icon {
-  font-size: 80px;
-}
-
+#done-screen .done-icon { font-size: 80px; }
 #done-screen .done-title {
   font-size: 34px;
   font-weight: 700;
   color: #f5c518;
   line-height: 1.4;
 }
-
 #done-screen .done-sub {
   font-size: 22px;
   color: #aaa;
   line-height: 1.6;
 }
 
-.btn-auto-again {
-  background: #0f3460 !important;
-  color: #f5c518 !important;
-  border: 2px solid #f5c518 !important;
+/* 모달 */
+#modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+#modal-overlay.visible {
+  display: flex;
+}
+
+#modal {
+  background: #16213e;
+  border: 2px solid #f5c518;
+  border-radius: 24px;
+  padding: 32px 28px;
+  width: 88%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #f5c518;
+}
+
+.time-inputs {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+}
+
+.time-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 22px;
+  color: #eee;
+}
+
+.time-input-group label {
+  color: #aaa;
+}
+
+.time-input-group input {
+  width: 68px;
+  height: 52px;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+  background: #0f3460;
+  border: 2px solid #333;
+  border-radius: 12px;
+  color: #f5c518;
+  outline: none;
+}
+
+.time-input-group input:focus {
+  border-color: #f5c518;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.modal-btn {
+  flex: 1;
+  height: 60px;
+  border: none;
+  border-radius: 14px;
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.modal-cancel {
+  background: #333;
+  color: #aaa;
+}
+
+.modal-confirm {
+  background: #f5c518;
+  color: #1a1a2e;
 }

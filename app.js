@@ -25,9 +25,11 @@ const answerText   = document.getElementById('answer-text');
 const tapHint      = document.getElementById('tap-hint');
 const btnPrev      = document.getElementById('btn-prev');
 const btnNext      = document.getElementById('btn-next');
+const btnAuto      = document.getElementById('btn-auto');
 const questionCard = document.getElementById('question-card');
 const cdBarQ       = document.getElementById('countdown-bar-q');
 const cdBarA       = document.getElementById('countdown-bar-a');
+const modalOverlay = document.getElementById('modal-overlay');
 
 function totalSteps() { return shuffled.length * 2; }
 
@@ -59,7 +61,9 @@ function renderStep() {
     answerCard.classList.add('visible');
   }
 
-  if (autoMode) startCountdown(isQuestion ? qSeconds : aSeconds, isQuestion ? cdBarQ : cdBarA);
+  if (autoMode) {
+    startCountdown(isQuestion ? qSeconds : aSeconds, isQuestion ? cdBarQ : cdBarA);
+  }
 }
 
 function startCountdown(seconds, barEl) {
@@ -72,9 +76,7 @@ function startCountdown(seconds, barEl) {
       barEl.style.width = '0%';
     });
   });
-  autoTimer = setTimeout(() => {
-    goNext(true);
-  }, seconds * 1000);
+  autoTimer = setTimeout(() => goNext(true), seconds * 1000);
 }
 
 function clearAutoTimer() {
@@ -86,7 +88,9 @@ function clearAutoTimer() {
 }
 
 function goNext(fromAuto) {
-  if (!fromAuto && autoMode) clearAutoTimer();
+  if (!fromAuto && autoMode) {
+    clearAutoTimer();
+  }
   if (step < totalSteps() - 1) {
     step++;
     renderStep();
@@ -98,31 +102,63 @@ function goNext(fromAuto) {
 }
 
 function goPrev() {
-  clearAutoTimer();
+  if (autoMode) clearAutoTimer();
   if (step > 0) {
     step--;
     renderStep();
   }
 }
 
-function startQuiz(auto) {
-  autoMode = auto;
+function stopAuto() {
+  autoMode = false;
+  clearAutoTimer();
+  btnAuto.classList.remove('active');
+  tapHint.style.opacity = '1';
+}
+
+// 자동 버튼 토글
+btnAuto.addEventListener('click', () => {
+  if (autoMode) {
+    stopAuto();
+  } else {
+    modalOverlay.classList.add('visible');
+  }
+});
+
+// 모달 확인
+document.getElementById('modal-confirm').addEventListener('click', () => {
   qSeconds = parseInt(document.getElementById('q-time').value) || 10;
   aSeconds = parseInt(document.getElementById('a-time').value) || 5;
-  step = 0;
-  shuffled = shuffle(quizData);
-  startScreen.style.display = 'none';
-  doneScreen.style.display = 'none';
-  quizScreen.style.display = 'flex';
+  modalOverlay.classList.remove('visible');
+  autoMode = true;
+  btnAuto.classList.add('active');
   renderStep();
-}
+});
+
+// 모달 취소
+document.getElementById('modal-cancel').addEventListener('click', () => {
+  modalOverlay.classList.remove('visible');
+});
 
 questionCard.addEventListener('click', () => goNext(false));
 answerCard.addEventListener('click',   () => goNext(false));
 btnNext.addEventListener('click',      () => goNext(false));
 btnPrev.addEventListener('click', goPrev);
 
-document.getElementById('btn-start').addEventListener('click',        () => startQuiz(false));
-document.getElementById('btn-auto').addEventListener('click',         () => startQuiz(true));
-document.getElementById('btn-restart').addEventListener('click',      () => startQuiz(false));
-document.getElementById('btn-restart-auto').addEventListener('click', () => startQuiz(true));
+document.getElementById('btn-start').addEventListener('click', () => {
+  step = 0;
+  shuffled = shuffle(quizData);
+  startScreen.style.display = 'none';
+  quizScreen.style.display = 'flex';
+  renderStep();
+});
+
+document.getElementById('btn-restart').addEventListener('click', () => {
+  step = 0;
+  autoMode = false;
+  btnAuto.classList.remove('active');
+  shuffled = shuffle(quizData);
+  doneScreen.style.display = 'none';
+  quizScreen.style.display = 'flex';
+  renderStep();
+});
