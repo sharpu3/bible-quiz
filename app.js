@@ -98,9 +98,9 @@ function applyCurrentMode() {
   tapHint.style.opacity = (autoMode || ttsMode) ? '0' : '1';
 
   if (autoMode && ttsMode) {
-    // 자동 + 읽기: 읽고 2초 후 넘김
+    // 자동 + 읽기: 읽고 2초 카운트다운 후 넘김
     const text = isQuestion ? quiz.question : quiz.answer.replace(/\s*\(.*\)/, '');
-    speak(text, () => { autoTimer = setTimeout(() => goNext(true), 2000); });
+    speak(text, () => { startCountdown(2, isQuestion ? cdBarQ : cdBarA); });
   } else if (autoMode) {
     // 자동만: 타이머
     startCountdown(isQuestion ? qSeconds : aSeconds, isQuestion ? cdBarQ : cdBarA);
