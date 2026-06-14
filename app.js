@@ -98,6 +98,7 @@ function applyCurrentMode() {
   const isQuestion = step % 2 === 0;
   const quiz = shuffled[quizIndex];
 
+  tapHint.textContent = isQuestion ? '👆 화면을 눌러 정답 확인' : '👆 화면을 눌러 다음 문제';
   tapHint.style.opacity = (autoMode || ttsMode) ? '0' : '1';
 
   if (autoMode && ttsMode) {
