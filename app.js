@@ -1,5 +1,15 @@
 let current = 0;
 let answered = false;
+let shuffled = [];
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 const startScreen = document.getElementById('start-screen');
 const quizScreen = document.getElementById('quiz-screen');
@@ -16,7 +26,7 @@ const btnNext = document.getElementById('btn-next');
 const questionCard = document.getElementById('question-card');
 
 function showCard(index) {
-  const quiz = quizData[index];
+  const quiz = shuffled[index];
   answered = false;
 
   questionEl.textContent = quiz.question;
@@ -43,6 +53,7 @@ questionCard.addEventListener('click', revealAnswer);
 
 document.getElementById('btn-start').addEventListener('click', () => {
   current = 0;
+  shuffled = shuffle(quizData);
   startScreen.style.display = 'none';
   doneScreen.style.display = 'none';
   quizScreen.style.display = 'flex';
@@ -68,6 +79,7 @@ btnNext.addEventListener('click', () => {
 
 document.getElementById('btn-restart').addEventListener('click', () => {
   current = 0;
+  shuffled = shuffle(quizData);
   doneScreen.style.display = 'none';
   quizScreen.style.display = 'flex';
   showCard(current);
