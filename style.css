@@ -1,0 +1,248 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+  background: #1a1a2e;
+  color: #eee;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  user-select: none;
+}
+
+/* 시작 화면 */
+#start-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  text-align: center;
+  padding: 24px;
+}
+
+#start-screen .title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #f5c518;
+  line-height: 1.4;
+}
+
+#start-screen .subtitle {
+  font-size: 22px;
+  color: #aaa;
+  line-height: 1.6;
+}
+
+#start-screen .cross {
+  font-size: 80px;
+}
+
+/* 퀴즈 화면 */
+#quiz-screen {
+  display: none;
+  flex-direction: column;
+  width: 100%;
+  max-width: 480px;
+  min-height: 100vh;
+  padding: 16px;
+}
+
+/* 진행률 */
+.progress-bar-wrap {
+  width: 100%;
+  background: #333;
+  border-radius: 8px;
+  height: 10px;
+  margin-bottom: 8px;
+}
+
+.progress-bar {
+  height: 10px;
+  background: #f5c518;
+  border-radius: 8px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  text-align: right;
+  font-size: 20px;
+  color: #aaa;
+  margin-bottom: 16px;
+}
+
+/* 카드 */
+.card-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card {
+  background: #16213e;
+  border-radius: 20px;
+  padding: 32px 24px;
+  border: 2px solid #0f3460;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.card:active {
+  border-color: #f5c518;
+}
+
+.card-label {
+  font-size: 18px;
+  color: #f5c518;
+  font-weight: 700;
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+}
+
+.card-question {
+  font-size: 24px;
+  line-height: 1.7;
+  color: #eee;
+  word-break: keep-all;
+}
+
+/* 답 카드 */
+.answer-card {
+  background: #0f3460;
+  border-radius: 20px;
+  padding: 28px 24px;
+  border: 2px solid #f5c518;
+  text-align: center;
+  display: none;
+  animation: slideDown 0.3s ease;
+}
+
+.answer-card.visible {
+  display: block;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.answer-label {
+  font-size: 18px;
+  color: #aaa;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.answer-text {
+  font-size: 32px;
+  font-weight: 700;
+  color: #f5c518;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
+/* 힌트 */
+.tap-hint {
+  text-align: center;
+  font-size: 18px;
+  color: #666;
+  margin-top: 8px;
+  transition: opacity 0.3s;
+}
+
+/* 이전/다음 버튼 */
+.nav-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  padding-bottom: 24px;
+}
+
+.nav-btn {
+  flex: 1;
+  height: 64px;
+  border: none;
+  border-radius: 16px;
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.nav-btn:active {
+  transform: scale(0.97);
+}
+
+.btn-prev {
+  background: #333;
+  color: #eee;
+}
+
+.btn-next {
+  background: #f5c518;
+  color: #1a1a2e;
+}
+
+.btn-prev:disabled {
+  background: #222;
+  color: #555;
+  cursor: not-allowed;
+}
+
+/* 시작/완료 공통 버튼 */
+.big-btn {
+  width: 100%;
+  max-width: 320px;
+  height: 72px;
+  border: none;
+  border-radius: 20px;
+  background: #f5c518;
+  color: #1a1a2e;
+  font-size: 26px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.big-btn:active {
+  transform: scale(0.97);
+}
+
+/* 완료 화면 */
+#done-screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  text-align: center;
+  padding: 24px;
+}
+
+#done-screen .done-icon {
+  font-size: 80px;
+}
+
+#done-screen .done-title {
+  font-size: 34px;
+  font-weight: 700;
+  color: #f5c518;
+  line-height: 1.4;
+}
+
+#done-screen .done-sub {
+  font-size: 22px;
+  color: #aaa;
+  line-height: 1.6;
+}

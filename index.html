@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#1a1a2e" />
+  <title>성경 퀴즈</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- 시작 화면 -->
+  <div id="start-screen">
+    <div class="cross">✝️</div>
+    <div class="title">성경 퀴즈</div>
+    <div class="subtitle">플래시 카드로 배우는<br>말씀 퀴즈 30문제</div>
+    <button class="big-btn" id="btn-start">시작하기</button>
+  </div>
+
+  <!-- 퀴즈 화면 -->
+  <div id="quiz-screen">
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+    </div>
+    <div class="progress-text" id="progress-text">1 / 30</div>
+
+    <div class="card-wrap">
+      <div class="card" id="question-card">
+        <div class="card-label">📖 문제</div>
+        <div class="card-question" id="question"></div>
+      </div>
+
+      <div class="tap-hint" id="tap-hint">👆 문제 카드를 눌러 정답 확인</div>
+
+      <div class="answer-card" id="answer-card">
+        <div class="answer-label">정답</div>
+        <div class="answer-text" id="answer-text"></div>
+      </div>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="nav-btn btn-prev" id="btn-prev">◀ 이전</button>
+      <button class="nav-btn btn-next" id="btn-next">다음 ▶</button>
+    </div>
+  </div>
+
+  <!-- 완료 화면 -->
+  <div id="done-screen">
+    <div class="done-icon">🎉</div>
+    <div class="done-title">수고하셨습니다!</div>
+    <div class="done-sub">30문제를 모두 풀었습니다.<br>말씀이 마음에 새겨지길 바랍니다.</div>
+    <button class="big-btn" id="btn-restart">처음부터 다시</button>
+  </div>
+
+  <script src="quiz.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
