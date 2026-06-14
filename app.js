@@ -94,7 +94,7 @@ function renderStep() {
       startCountdown(qSeconds, cdBarQ);
     } else if (ttsMode) {
       // 읽기(단독 or 자동+읽기): 읽고 나서...
-      speak(quiz.question, autoMode ? () => goNext(true) : null);
+      speak(quiz.question, autoMode ? () => { autoTimer = setTimeout(() => goNext(true), 2000); } : null);
     }
   } else {
     const plainAnswer = quiz.answer.replace(/\s*\(.*\)/, '');
@@ -113,7 +113,7 @@ function renderStep() {
       startCountdown(aSeconds, cdBarA);
     } else if (ttsMode) {
       // 읽기(단독 or 자동+읽기): 읽고 나서...
-      speak(plainAnswer, autoMode ? () => goNext(true) : null);
+      speak(plainAnswer, autoMode ? () => { autoTimer = setTimeout(() => goNext(true), 2000); } : null);
     }
   }
 }
@@ -170,7 +170,7 @@ btnTts.addEventListener('click', () => {
     const quiz = shuffled[quizIndex];
     if (quizIndex < shuffled.length) {
       const text = isQuestion ? quiz.question : quiz.answer.replace(/\s*\(.*\)/, '');
-      speak(text, autoMode ? () => goNext(true) : null);
+      speak(text, autoMode ? () => { autoTimer = setTimeout(() => goNext(true), 2000); } : null);
     }
   }
 });
