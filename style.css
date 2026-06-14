@@ -23,9 +23,11 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 32px;
+  gap: 28px;
   text-align: center;
   padding: 24px;
+  width: 100%;
+  max-width: 380px;
 }
 
 #start-screen .title {
@@ -43,6 +45,64 @@ body {
 
 #start-screen .cross {
   font-size: 80px;
+}
+
+/* 자동넘기기 섹션 */
+.auto-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  border-top: 1px solid #333;
+  padding-top: 24px;
+}
+
+.auto-title {
+  font-size: 20px;
+  color: #aaa;
+  font-weight: 600;
+}
+
+.time-inputs {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+}
+
+.time-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 22px;
+  color: #eee;
+}
+
+.time-input-group label {
+  color: #aaa;
+}
+
+.time-input-group input {
+  width: 68px;
+  height: 52px;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+  background: #16213e;
+  border: 2px solid #0f3460;
+  border-radius: 12px;
+  color: #f5c518;
+  outline: none;
+}
+
+.time-input-group input:focus {
+  border-color: #f5c518;
+}
+
+.btn-auto {
+  background: #0f3460 !important;
+  color: #f5c518 !important;
+  border: 2px solid #f5c518 !important;
 }
 
 /* 퀴즈 화면 */
@@ -91,7 +151,7 @@ body {
 .card {
   background: #16213e;
   border-radius: 20px;
-  padding: 32px 24px;
+  padding: 32px 24px 20px;
   border: 2px solid #0f3460;
   cursor: pointer;
   transition: border-color 0.2s;
@@ -118,17 +178,19 @@ body {
   line-height: 1.7;
   color: #eee;
   word-break: keep-all;
+  flex: 1;
 }
 
 /* 답 카드 */
 .answer-card {
   background: #0f3460;
   border-radius: 20px;
-  padding: 28px 24px;
+  padding: 28px 24px 20px;
   border: 2px solid #f5c518;
   text-align: center;
   display: none;
   animation: slideDown 0.3s ease;
+  cursor: pointer;
 }
 
 .answer-card.visible {
@@ -161,6 +223,23 @@ body {
   font-weight: 400;
   color: #aaa;
   margin-top: 8px;
+}
+
+/* 카운트다운 바 */
+.countdown-bar-wrap {
+  margin-top: 16px;
+  height: 6px;
+  background: #333;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.countdown-bar {
+  height: 6px;
+  background: #f5c518;
+  border-radius: 4px;
+  width: 100%;
+  transform-origin: left;
 }
 
 /* 힌트 */
@@ -261,4 +340,10 @@ body {
   font-size: 22px;
   color: #aaa;
   line-height: 1.6;
+}
+
+.btn-auto-again {
+  background: #0f3460 !important;
+  color: #f5c518 !important;
+  border: 2px solid #f5c518 !important;
 }

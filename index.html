@@ -17,6 +17,23 @@
     <div class="title">성경 퀴즈</div>
     <div class="subtitle">플래시 카드로 배우는<br>말씀 퀴즈 30문제</div>
     <button class="big-btn" id="btn-start">시작하기</button>
+
+    <div class="auto-section">
+      <div class="auto-title">자동 넘기기 설정</div>
+      <div class="time-inputs">
+        <div class="time-input-group">
+          <label>문제</label>
+          <input type="number" id="q-time" value="10" min="3" max="60" />
+          <span>초</span>
+        </div>
+        <div class="time-input-group">
+          <label>정답</label>
+          <input type="number" id="a-time" value="5" min="2" max="60" />
+          <span>초</span>
+        </div>
+      </div>
+      <button class="big-btn btn-auto" id="btn-auto">자동 넘기기</button>
+    </div>
   </div>
 
   <!-- 퀴즈 화면 -->
@@ -30,6 +47,7 @@
       <div class="card" id="question-card">
         <div class="card-label" id="card-label">📖 문제</div>
         <div class="card-question" id="question"></div>
+        <div class="countdown-bar-wrap"><div class="countdown-bar" id="countdown-bar-q"></div></div>
       </div>
 
       <div class="tap-hint" id="tap-hint">👆 카드 또는 다음 버튼을 눌러 정답 확인</div>
@@ -37,6 +55,7 @@
       <div class="answer-card" id="answer-card">
         <div class="answer-label">정답</div>
         <div class="answer-text" id="answer-text"></div>
+        <div class="countdown-bar-wrap"><div class="countdown-bar" id="countdown-bar-a"></div></div>
       </div>
     </div>
 
@@ -52,9 +71,10 @@
     <div class="done-title">수고하셨습니다!</div>
     <div class="done-sub">30문제를 모두 풀었습니다.<br>말씀이 마음에 새겨지길 바랍니다.</div>
     <button class="big-btn" id="btn-restart">처음부터 다시</button>
+    <button class="big-btn btn-auto-again" id="btn-restart-auto">자동으로 다시</button>
   </div>
 
-  <script src="quiz.js?v=8"></script>
-  <script src="app.js?v=8"></script>
+  <script src="quiz.js?v=9"></script>
+  <script src="app.js?v=9"></script>
 </body>
 </html>
