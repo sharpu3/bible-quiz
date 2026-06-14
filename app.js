@@ -1,6 +1,7 @@
 let step = 0;
 let shuffled = [];
 let autoMode = false;
+let ttsMode = false;
 let autoTimer = null;
 let qSeconds = 10;
 let aSeconds = 5;
@@ -26,6 +27,7 @@ const tapHint      = document.getElementById('tap-hint');
 const btnPrev      = document.getElementById('btn-prev');
 const btnNext      = document.getElementById('btn-next');
 const btnAuto      = document.getElementById('btn-auto');
+const btnTts       = document.getElementById('btn-tts');
 const questionCard = document.getElementById('question-card');
 const cdBarQ       = document.getElementById('countdown-bar-q');
 const cdBarA       = document.getElementById('countdown-bar-a');
@@ -33,39 +35,22 @@ const modalOverlay = document.getElementById('modal-overlay');
 
 function totalSteps() { return shuffled.length * 2; }
 
-function renderStep() {
-  const quizIndex = Math.floor(step / 2);
-  const isQuestion = step % 2 === 0;
-  const quiz = shuffled[quizIndex];
-
-  progressBar.style.width = (quizIndex / shuffled.length * 100) + '%';
-  progressText.textContent = (quizIndex + 1) + ' / ' + shuffled.length;
-  btnPrev.disabled = step === 0;
-  btnNext.textContent = step === totalSteps() - 1 ? '완료 ✓' : '다음 ▶';
-
-  if (isQuestion) {
-    document.getElementById('card-label').textContent = '📖 Q' + quiz.number;
-    questionEl.textContent = quiz.question;
-    questionCard.style.display = 'flex';
-    answerCard.classList.remove('visible');
-    tapHint.style.opacity = autoMode ? '0' : '1';
-  } else {
-    const match = quiz.answer.match(/^([^(]+?)(\s*\(.*\))?$/);
-    if (match && match[2]) {
-      answerText.innerHTML = match[1] + '<span class="answer-sub">' + match[2].trim() + '</span>';
-    } else {
-      answerText.textContent = quiz.answer;
-    }
-    questionCard.style.display = 'none';
-    tapHint.style.opacity = '0';
-    answerCard.classList.add('visible');
-  }
-
-  if (autoMode) {
-    startCountdown(isQuestion ? qSeconds : aSeconds, isQuestion ? cdBarQ : cdBarA);
-  }
+// TTS
+function speak(text, onDone) {
+  if (!ttsMode) { if (onDone) onDone(); return; }
+  speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'ko-KR';
+  utter.rate = 0.9;
+  if (onDone) utter.onend = onDone;
+  speechSynthesis.speak(utter);
 }
 
+function stopTts() {
+  speechSynthesis.cancel();
+}
+
+// 카운트다운 바
 function startCountdown(seconds, barEl) {
   clearAutoTimer();
   barEl.style.transition = 'none';
@@ -87,41 +72,106 @@ function clearAutoTimer() {
   cdBarA.style.width = '0%';
 }
 
+function renderStep() {
+  const quizIndex = Math.floor(step / 2);
+  const isQuestion = step % 2 === 0;
+  const quiz = shuffled[quizIndex];
+
+  progressBar.style.width = (quizIndex / shuffled.length * 100) + '%';
+  progressText.textContent = (quizIndex + 1) + ' / ' + shuffled.length;
+  btnPrev.disabled = step === 0;
+  btnNext.textContent = step === totalSteps() - 1 ? '완료 ✓' : '다음 ▶';
+
+  if (isQuestion) {
+    document.getElementById('card-label').textContent = '📖 Q' + quiz.number;
+    questionEl.textContent = quiz.question;
+    questionCard.style.display = 'flex';
+    answerCard.classList.remove('visible');
+    tapHint.style.opacity = (autoMode || ttsMode) ? '0' : '1';
+
+    if (autoMode && !ttsMode) {
+      // 자동만: 타이머
+      startCountdown(qSeconds, cdBarQ);
+    } else if (ttsMode) {
+      // 읽기(단독 or 자동+읽기): 읽고 나서...
+      speak(quiz.question, autoMode ? () => goNext(true) : null);
+    }
+  } else {
+    const plainAnswer = quiz.answer.replace(/\s*\(.*\)/, '');
+    const match = quiz.answer.match(/^([^(]+?)(\s*\(.*\))?$/);
+    if (match && match[2]) {
+      answerText.innerHTML = match[1] + '<span class="answer-sub">' + match[2].trim() + '</span>';
+    } else {
+      answerText.textContent = quiz.answer;
+    }
+    questionCard.style.display = 'none';
+    tapHint.style.opacity = '0';
+    answerCard.classList.add('visible');
+
+    if (autoMode && !ttsMode) {
+      // 자동만: 타이머
+      startCountdown(aSeconds, cdBarA);
+    } else if (ttsMode) {
+      // 읽기(단독 or 자동+읽기): 읽고 나서...
+      speak(plainAnswer, autoMode ? () => goNext(true) : null);
+    }
+  }
+}
+
 function goNext(fromAuto) {
-  if (!fromAuto && autoMode) {
+  if (!fromAuto) {
     clearAutoTimer();
+    stopTts();
   }
   if (step < totalSteps() - 1) {
     step++;
     renderStep();
   } else {
     clearAutoTimer();
+    stopTts();
     quizScreen.style.display = 'none';
     doneScreen.style.display = 'flex';
   }
 }
 
 function goPrev() {
-  if (autoMode) clearAutoTimer();
+  clearAutoTimer();
+  stopTts();
   if (step > 0) {
     step--;
     renderStep();
   }
 }
 
-function stopAuto() {
-  autoMode = false;
-  clearAutoTimer();
-  btnAuto.classList.remove('active');
-  tapHint.style.opacity = '1';
-}
-
 // 자동 버튼 토글
 btnAuto.addEventListener('click', () => {
   if (autoMode) {
-    stopAuto();
+    autoMode = false;
+    clearAutoTimer();
+    btnAuto.classList.remove('active');
+    tapHint.style.opacity = ttsMode ? '0' : '1';
   } else {
     modalOverlay.classList.add('visible');
+  }
+});
+
+// TTS 버튼 토글
+btnTts.addEventListener('click', () => {
+  ttsMode = !ttsMode;
+  btnTts.classList.toggle('active', ttsMode);
+  if (!ttsMode) {
+    stopTts();
+    tapHint.style.opacity = autoMode ? '0' : '1';
+  } else {
+    tapHint.style.opacity = '0';
+    // 현재 카드 바로 읽기 시작
+    const quizIndex = Math.floor(step / 2);
+    const isQuestion = step % 2 === 0;
+    const quiz = shuffled[quizIndex];
+    if (quizIndex < shuffled.length) {
+      const text = isQuestion ? quiz.question : quiz.answer.replace(/\s*\(.*\)/, '');
+      speak(text, autoMode ? () => goNext(true) : null);
+    }
   }
 });
 
@@ -132,7 +182,11 @@ document.getElementById('modal-confirm').addEventListener('click', () => {
   modalOverlay.classList.remove('visible');
   autoMode = true;
   btnAuto.classList.add('active');
-  renderStep();
+  // 자동만 모드일 때 현재 카드부터 타이머 시작
+  if (!ttsMode) {
+    const isQuestion = step % 2 === 0;
+    startCountdown(isQuestion ? qSeconds : aSeconds, isQuestion ? cdBarQ : cdBarA);
+  }
 });
 
 // 모달 취소
@@ -156,7 +210,9 @@ document.getElementById('btn-start').addEventListener('click', () => {
 document.getElementById('btn-restart').addEventListener('click', () => {
   step = 0;
   autoMode = false;
+  ttsMode = false;
   btnAuto.classList.remove('active');
+  btnTts.classList.remove('active');
   shuffled = shuffle(quizData);
   doneScreen.style.display = 'none';
   quizScreen.style.display = 'flex';

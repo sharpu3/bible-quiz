@@ -228,11 +228,20 @@ body {
   flex: 1;
   background: #222;
   color: #aaa;
-  font-size: 18px;
+  font-size: 16px;
   border: 1px solid #444;
 }
 
-.btn-auto.active {
+.btn-tts {
+  flex: 1;
+  background: #222;
+  color: #aaa;
+  font-size: 22px;
+  border: 1px solid #444;
+}
+
+.btn-auto.active,
+.btn-tts.active {
   background: #0f3460;
   color: #f5c518;
   border: 1px solid #f5c518;
