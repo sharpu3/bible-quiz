@@ -29,6 +29,7 @@ function showCard(index) {
   const quiz = shuffled[index];
   answered = false;
 
+  document.getElementById('card-label').textContent = '📖 Q' + quiz.number;
   questionEl.textContent = quiz.question;
   const match = quiz.answer.match(/^([^(]+?)(\s*\(.*\))?$/);
   if (match && match[2]) {
@@ -36,6 +37,8 @@ function showCard(index) {
   } else {
     answerText.textContent = quiz.answer;
   }
+
+  questionCard.style.display = 'flex';
   answerCard.classList.remove('visible');
   tapHint.style.opacity = '1';
 
@@ -50,8 +53,9 @@ function showCard(index) {
 function advance() {
   if (!answered) {
     answered = true;
-    answerCard.classList.add('visible');
+    questionCard.style.display = 'none';
     tapHint.style.opacity = '0';
+    answerCard.classList.add('visible');
   } else {
     if (current < quizData.length - 1) {
       current++;
