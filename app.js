@@ -169,6 +169,7 @@ function goNext(fromAuto) {
     clearAutoTimer();
     stopTts();
     releaseWakeLock();
+    document.getElementById('done-sub').textContent = quizData.length + '문제를 모두 풀었습니다. 말씀이 마음에 새겨지길 바랍니다.';
     quizScreen.style.display = 'none';
     doneScreen.style.display = 'flex';
   }
