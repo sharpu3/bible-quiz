@@ -38,6 +38,7 @@ function totalSteps() { return shuffled.length * 2; }
 
 // Wake Lock
 async function requestWakeLock() {
+  if (wakeLock) return;
   if ('wakeLock' in navigator) {
     try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {}
   }
@@ -57,16 +58,30 @@ document.addEventListener('visibilitychange', () => {
 });
 
 // TTS
+let currentUtterance = null;
+
 function speak(text, onDone) {
   speechSynthesis.cancel();
+  currentUtterance = null;
   if (!ttsMode) { if (onDone) onDone(); return; }
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = 'ko-KR';
   utter.rate = 0.9;
-  if (onDone) utter.onend = onDone;
+  if (onDone) {
+    utter.onend = () => {
+      if (currentUtterance === utter) {
+        currentUtterance = null;
+        onDone();
+      }
+    };
+  }
+  currentUtterance = utter;
   speechSynthesis.speak(utter);
 }
-function stopTts() { speechSynthesis.cancel(); }
+function stopTts() {
+  currentUtterance = null;
+  speechSynthesis.cancel();
+}
 
 // 카운트다운 바
 function startCountdown(seconds, barEl) {
