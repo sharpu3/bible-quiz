@@ -20,7 +20,7 @@
 - **이전** 버튼: 정답 화면 → 해당 문제로, 문제 화면 → 이전 문제로
 
 ### 자동 넘기기 (자동 버튼)
-- 활성화 시 문제/정답 표시 시간 설정 가능 (기본: 문제 10초, 정답 5초)
+- 활성화 시 문제/정답 표시 시간 설정 가능 (기본: 문제 10초, 정답 5초, 범위 문제 3~60초 / 정답 2~60초)
 - 카운트다운 진행 바 표시
 - 다시 누르면 중단
 - 수동으로 넘기면 새 카드부터 카운트 리셋
@@ -84,9 +84,15 @@ const quizData = [
 ## 기술 스택
 
 - HTML / CSS / JavaScript (순수 정적 파일, 프레임워크 없음)
-- Web Speech API — 브라우저 내장 한국어 TTS
+- Web Speech API — 브라우저 내장 한국어 TTS (iOS onerror/resume 방어 포함)
 - Screen Wake Lock API — 화면 꺼짐 방지 (포그라운드 한정)
 - GitHub Pages 무료 배포
+
+## 모바일 호환성
+
+- `viewport-fit=cover` + `env(safe-area-inset-bottom)` — 노치/다이나믹 아일랜드 대응
+- `100dvh` fallback — iOS Safari 주소창 높이 변동 대응
+- 핀치줌 허용 — 노인 사용자 글자 확대 가능
 
 ## 대상
 
