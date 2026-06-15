@@ -140,7 +140,7 @@ function renderStep() {
   const isQuestion = step % 2 === 0;
   const quiz = shuffled[quizIndex];
 
-  progressBar.style.width = (quizIndex / shuffled.length * 100) + '%';
+  progressBar.style.width = ((quizIndex + 1) / shuffled.length * 100) + '%';
   progressText.textContent = (quizIndex + 1) + ' / ' + shuffled.length;
   btnPrev.disabled = step === 0;
   btnNext.textContent = step === totalSteps() - 1 ? '완료 ✓' : '다음 ▶';
