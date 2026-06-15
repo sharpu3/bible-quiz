@@ -66,17 +66,19 @@ function speak(text, onDone) {
   speechSynthesis.cancel();
   currentUtterance = null;
   if (!ttsMode) { if (onDone) onDone(); return; }
+  // iOS에서 speechSynthesis가 paused 상태로 복귀하는 버그 대응
+  if (speechSynthesis.paused) speechSynthesis.resume();
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = 'ko-KR';
   utter.rate = 0.9;
-  if (onDone) {
-    utter.onend = () => {
-      if (currentUtterance === utter) {
-        currentUtterance = null;
-        onDone();
-      }
-    };
-  }
+  const finish = () => {
+    if (currentUtterance === utter) {
+      currentUtterance = null;
+      if (onDone) onDone();
+    }
+  };
+  utter.onend = finish;
+  utter.onerror = finish; // 에러 시에도 다음 단계 진행
   currentUtterance = utter;
   speechSynthesis.speak(utter);
 }
@@ -197,8 +199,8 @@ btnAuto.addEventListener('click', () => {
 
 // 모달 확인
 document.getElementById('modal-confirm').addEventListener('click', () => {
-  qSeconds = parseInt(document.getElementById('q-time').value) || 10;
-  aSeconds = parseInt(document.getElementById('a-time').value) || 5;
+  qSeconds = Math.min(60, Math.max(3, parseInt(document.getElementById('q-time').value) || 10));
+  aSeconds = Math.min(60, Math.max(2, parseInt(document.getElementById('a-time').value) || 5));
   modalOverlay.classList.remove('visible');
   autoMode = true;
   btnAuto.classList.add('active');
