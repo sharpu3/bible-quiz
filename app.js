@@ -36,6 +36,8 @@ const modalOverlay = document.getElementById('modal-overlay');
 
 function totalSteps() { return shuffled.length * 2; }
 
+document.getElementById('quiz-count').textContent = quizData.length;
+
 // Wake Lock
 async function requestWakeLock() {
   if (wakeLock) return;
